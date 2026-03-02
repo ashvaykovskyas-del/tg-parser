@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 import os
-
+from telethon import TelegramClient
+from telethon.sessions import StringSession
+import asyncio
 app = FastAPI()
 
 @app.get("/")
