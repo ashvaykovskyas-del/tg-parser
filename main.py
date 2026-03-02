@@ -2,18 +2,26 @@ from fastapi import FastAPI
 import os
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-import asyncio
+
 app = FastAPI()
 
+api_id = int(os.environ.get("API_ID"))
+api_hash = os.environ.get("API_HASH")
+string_session = os.environ.get("STRING_SESSION")
+
+client = TelegramClient(StringSession(string_session), api_id, api_hash)
+
+
+@app.on_event("startup")
+async def startup():
+    await client.connect()
+
+
 @app.get("/")
-def root():
+async def root():
     return {"status": "tg-parser is running"}
 
-@app.get("/health")
-def health():
-    return {"health": "ok"}
 
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8080))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+@app.get("/health")
+async def health():
+    return {"health": "ok"}
